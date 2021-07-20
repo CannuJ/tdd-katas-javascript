@@ -17,6 +17,9 @@ function splitMulti(string, tokens) {
  * @param numbers
  */
 function Add(numbers) {
+    if (numbers === "" || numbers.replace(/\D/g, '') === "") {
+        return 0;
+    }
     var delimArr = [',', '\n', ';']; // default delimiters
     if (numbers[0] === "/" && numbers[1] === "/") {
         delimArr = [numbers[2]];
@@ -24,13 +27,18 @@ function Add(numbers) {
     }
     var numArray = splitMulti(numbers, delimArr);
     let numTemp = 0;
-    if (numArray.length === 1 && numArray[0].replace(/\D/g, '') === "") {
-        return 0;
-    }
+    let negArr = [];
     for (let i = 0; i < numArray.length; i++) {
         if (!isNaN(Number(numArray[i].replace(/\D/g, '')))) {
+            if (Math.sign(numArray[i]) < 0) {
+                negArr.push(numArray[i]);
+                continue;
+            }
             numTemp += parseInt(numArray[i]);
         }
+    }
+    if (negArr.length > 0) {
+        throw new Error('negatives not allowed: ' + negArr.join(','));
     }
     return numTemp;
 }

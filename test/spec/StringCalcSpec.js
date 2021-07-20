@@ -17,4 +17,8 @@ describe("StringCalcCheck", function(){
         expect(25).toEqual(Add("//:\\n17:2:6"));
     });
 
+    it("Testing negative number exception", function () {
+        // expect(Add("5,-3").toThrowError('Error: negatives not allowed: -3'));
+    });
+
 });
