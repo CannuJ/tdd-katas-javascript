@@ -14,6 +14,7 @@ describe("StringCalcCheck", function(){
     it("Delimiter tests", function () {
         expect(3).toEqual(Add("//;\\n1;2"));
         expect(3).toEqual(Add("1;2"));
+        expect(25).toEqual(Add("//:\\n17:2:6"));
     });
 
 });
