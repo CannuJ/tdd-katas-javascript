@@ -8,6 +8,7 @@
     "files": [
         "typefiles/onetest.ts",
         "typefiles/oddeven.ts",
+        "typefiles/stringcalc.ts",
         "typefiles/stringsum.ts"
         
     ]
