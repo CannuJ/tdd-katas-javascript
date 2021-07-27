@@ -1,45 +1,77 @@
 "use strict";
 /**
- * Separates a string based on the list of tokens supplied
- * @param string
- * @param tokens
+ * Takes a string and determines delimiter if a definition exists
+ * @param string - string containing alphanumeric characters, possibly delimiter definition
+ * as per definition '//.*\n' where '.*' represents defined delimiter
  */
-function splitMulti(string, tokens) {
-    var tempChar = tokens[0]; // default split char
-    for (var i = 1; i < tokens.length; i++) {
-        string = string.split(tokens[i]).join(tempChar);
+function getDelimiter(string) {
+    const delimArray = [];
+    const delimRegExp = /(?:^\/\/)?\[([^\[\]]+)]\n?/g;
+    let delimRegExpArray = delimRegExp.exec(string);
+    while (delimRegExpArray !== null) {
+        delimArray.push(delimRegExpArray[1]);
+        delimRegExpArray = delimRegExp.exec(string);
+    }
+    if (delimArray.length > 0) {
+        return new RegExp('[' + delimArray.join('') + ']');
+    }
+    delimRegExpArray = /^\/\/(.*)\n/.exec(string);
+    if (delimRegExpArray && delimRegExpArray[1]) {
+        return delimRegExpArray[1];
+    }
+    return [',', '\n', ';']; // default delim array
+}
+/**
+ * Takes a string and drops the delimiter definition if exists
+ * @param string - string containing alphanumeric characters, possibly delimiter definition
+ */
+function formatString(string) {
+    const regExp = /^(\/\/.+\n)/;
+    const regExpExecArray = regExp.exec(string);
+    if (regExpExecArray && regExpExecArray.length > 0) {
+        return string.replace(regExp, '');
+    }
+    return string;
+}
+function getNumbers(string, delimiter) {
+    if (typeof delimiter === "string") {
+        return string.split(delimiter)
+            .filter(n => n !== ',')
+            .map(n => parseInt(n));
+    }
+    const tempChar = delimiter[0]; // default split char
+    for (var i = 1; i < delimiter.length; i++) {
+        string = string.split(delimiter[i]).join(tempChar);
     }
     string = string.split(tempChar);
-    return string;
+    return string.map(n => parseInt(n));
+}
+function calculateSum(numbers) {
+    const negatives = [];
+    const finalSum = numbers.reduce((sum, n) => {
+        if (n < 0) {
+            negatives.push(n);
+        }
+        if (isNaN(n)) {
+            console.log("NaN");
+        }
+        return sum + n;
+    }, 0);
+    if (negatives.length > 0) {
+        throw new Error('negatives not allowed: ' + negatives.join(','));
+    }
+    return finalSum;
 }
 /**
  * Separates and returns sum of a string containing up to 2 numbers
  * @param numbers
  */
 function Add(numbers) {
-    if (numbers === "" || numbers.replace(/\D/g, '') === "") {
+    if (numbers === '' || numbers.replace(/\D/g, '') === '') {
         return 0;
     }
-    var delimArr = [',', '\n', ';']; // default delimiters
-    if (numbers[0] === "/" && numbers[1] === "/") {
-        delimArr = [numbers[2]];
-        numbers = numbers.substring(numbers.indexOf(delimArr[0]) + 3);
-    }
-    var numArray = splitMulti(numbers, delimArr);
-    let numTemp = 0;
-    let negArr = [];
-    for (let i = 0; i < numArray.length; i++) {
-        if (!isNaN(Number(numArray[i].replace(/\D/g, '')))) {
-            if (Math.sign(numArray[i]) < 0) {
-                negArr.push(numArray[i]);
-                continue;
-            }
-            numTemp += parseInt(numArray[i]);
-        }
-    }
-    if (negArr.length > 0) {
-        throw new Error('negatives not allowed: ' + negArr.join(','));
-    }
-    return numTemp;
+    const delimiter = getDelimiter(numbers);
+    const formattedInput = formatString(numbers);
+    return calculateSum(getNumbers(formattedInput, delimiter));
 }
 //# sourceMappingURL=stringcalc.js.map

@@ -6,7 +6,7 @@ describe("StringCalcCheck", function(){
         expect(3).toEqual(Add('1,2'));
     });
 
-    it("Mixed string of numbers", function () {
+    it("Mixed string of numbers or just letters", function () {
         expect(0).toEqual(Add("gfdkls"));
         expect(6).toEqual(Add('1\n2,3'));
     });
